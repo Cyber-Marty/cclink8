@@ -1,0 +1,22 @@
+{
+  "name": "@cclink8/core",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./pure": {
+      "types": "./dist/pure.d.ts",
+      "import": "./dist/pure.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts src/pure.ts --format esm --dts --clean --tsconfig tsconfig.build.json",
+    "test": "vitest run"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "name": "cclink8-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Clickable file paths and URLs for Claude Code, with safe terminal fallback.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "npm run build -w @cclink8/core && npm run build -w cclink8 && npm run build -w @cclink8/claude-plugin",
+    "test": "vitest run",
+    "typecheck": "tsc -b",
+    "plugin:validate": "claude plugin validate packages/claude-plugin",
+    "plugin:test": "claude plugin test packages/claude-plugin"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.0"
+  }
+}

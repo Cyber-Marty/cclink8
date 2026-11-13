@@ -1,0 +1,16 @@
+{
+  "name": "cclink8",
+  "version": "0.1.0",
+  "description": "Clickable file paths and URLs in Claude Code, with safe terminal fallback.",
+  "author": {
+    "name": "Cyber-Marty"
+  },
+  "repository": "https://github.com/Cyber-Marty/cclink8",
+  "license": "Apache-2.0",
+  "keywords": [
+    "claude-code",
+    "links",
+    "osc8",
+    "terminal"
+  ]
+}

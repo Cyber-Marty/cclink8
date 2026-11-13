@@ -1,0 +1,13 @@
+{
+  "name": "cclink8",
+  "owner": {
+    "name": "Cyber-Marty"
+  },
+  "plugins": [
+    {
+      "name": "cclink8",
+      "source": "./packages/claude-plugin",
+      "description": "Clickable file paths and URLs in Claude Code, with safe terminal fallback."
+    }
+  ]
+}

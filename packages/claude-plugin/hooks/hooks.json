@@ -1,0 +1,4 @@
+{
+  "description": "cclink8 hooks module",
+  "modules": ["./register.js"]
+}

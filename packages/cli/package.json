@@ -1,0 +1,29 @@
+{
+  "name": "cclink8",
+  "version": "0.1.0",
+  "description": "Clickable file paths and URLs for Claude Code, with safe terminal fallback.",
+  "type": "module",
+  "bin": {
+    "cclink8": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Cyber-Marty/cclink8.git"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@cclink8/core": "0.1.0"
+  }
+}

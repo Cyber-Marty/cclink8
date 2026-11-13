@@ -1,0 +1,14 @@
+{
+  "name": "@cclink8/claude-plugin",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "prebuild": "node -e \"require('node:fs').rmSync('hooks/register.js',{force:true})\"",
+    "build": "tsup",
+    "test": "claude plugin test ."
+  },
+  "dependencies": {
+    "@cclink8/core": "0.1.0"
+  }
+}
