@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.4 — 2026-11-13
+
+- Fix `.xlsx`/Excel link opening on the Claude Code CLI surface: use a **single click**. The plugin uses `Markdown` + `onLinkPress` and handles `file:`/`http(s):` presses itself, independent of terminal OSC 8.
+- Ctrl/Cmd+Click is handled by the terminal/IDE surface; on Windows it may only run `explorer /select` and does not trigger `onLinkPress`.
+- Fallback to OSC 8 for non-CLI surfaces, overly long text, or when `$.process.run` is unavailable; `cclink8 open` remains the fallback.
+- No shell, only `file:`/`http:`/`https:`, no automatic opening.
+
 ## 0.1.3 — 2026-11-13
 
 - Zero-config Ctrl+Click: the plugin sets `FORCE_HYPERLINK=1` inside the session when the user has not set it explicitly.

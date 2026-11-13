@@ -40,7 +40,7 @@
 
 ### 2.2 目标用户
 
-1. **CLI 重度用户**：看到 `C:\repo\file.py:42`，想 Ctrl+Click 直接跳到编辑器第 42 行。
+1. **CLI 重度用户**：看到 `C:\repo\file.py:42`，想单击打开文件；行号跳转放到 v0.2。
 2. **Windows 开发者**：受盘符、UNC、空格、中文、括号路径困扰；现有插件大多 macOS 倾向。
 3. **远程/SSH/tmux 用户**：链接要跨会话存活，终端不支持 OSC 8 时要有明确 fallback。
 4. **插件作者**：需要一个稳定、跨平台的“路径/URL → 可点击链接”原语，而不是各自重写。
@@ -98,7 +98,7 @@ cclink8 demo                   # 5 个示例，2 分钟看到效果
 
 ### 4.1 MVP 五个必支持场景
 
-1. `C:\path\file.py:42` → Windows Terminal / VS Code 中 Ctrl+Click 跳到第 42 行。
+1. `C:\path\file.py:42` → Windows Terminal / VS Code 中单击打开文件；行号保留在 label，跳行 v0.2。
 2. `\\server\share\file` → 打开资源管理器/默认应用。
 3. `https://...` → 打开浏览器。
 4. 空格、中文、括号、`#`、`%` 路径正确编码。
@@ -211,7 +211,7 @@ cclink8/
 
 ## 8. 分发与安装
 
-- npm registry：v0.1 **pending**，不发布 npm；CLI 从 GitHub tarball/source 安装：`npm pack -w cclink8 && npm i -g ./cclink8-0.1.3.tgz`。
+- npm registry：v0.1 **pending**，不发布 npm；CLI 从 GitHub tarball/source 安装：`npm pack -w cclink8 && npm i -g ./cclink8-0.1.4.tgz`。
 - Claude Code marketplace：插件一键安装。
 - GitHub Releases：独立 CLI tarball（Node 单文件，无 runtime 依赖）。
 - Homebrew/PyPI：有明确需求再做，MVP 不铺。

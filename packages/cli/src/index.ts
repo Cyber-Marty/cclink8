@@ -141,11 +141,12 @@ async function printDoctor(): Promise<void> {
   for (const note of profile.notes) process.stdout.write(`  - ${note}\n`);
   process.stdout.write(`FORCE_HYPERLINK=${force || "(unset)"}\n`);
   if (!force) {
-    process.stdout.write("FORCE_HYPERLINK: the plugin sets it automatically in-session; no manual setup needed.\n");
+    process.stdout.write("FORCE_HYPERLINK: the plugin sets it automatically in-session; CLI clicks are handled by the plugin, OSC 8 is fallback only.\n");
   } else if (!forceEnabled) {
-    process.stdout.write("FORCE_HYPERLINK is explicitly disabled; Ctrl+Click may not work.\n");
+    process.stdout.write("FORCE_HYPERLINK is explicitly disabled; CLI clicks are still handled by the plugin, but the OSC 8 fallback may not be clickable.\n");
     process.stdout.write("Fallback: cclink8 open <path>.\n");
   }
+  process.stdout.write("Clicking: single-click plugin links; Ctrl+Click is handled by the surface (Windows may only select).\n");
   process.stdout.write("core: bundled (print/open/copy available)\n");
 }
 
@@ -181,7 +182,8 @@ function printInit(): void {
     "  cclink8 doctor",
     "",
     "The plugin is self-contained; no npm install is required for the plugin.",
-    "Zero-config: the plugin sets FORCE_HYPERLINK=1 automatically (unless you explicitly set 0/false).",
+    "Zero-config: the plugin handles a single click in the CLI; Ctrl+Click is handled by the surface (Windows may only select).",
+    "FORCE_HYPERLINK=1 is auto-set for the OSC 8 fallback. Use cclink8 open <path> if single-click fails.",
     "npm registry is pending. Install the CLI from a GitHub tarball or from source:",
     `  npm pack -w cclink8 && npm i -g ./cclink8-${getVersion()}.tgz`,
   ].join("\n") + "\n");

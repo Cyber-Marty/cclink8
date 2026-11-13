@@ -627,6 +627,9 @@ function rewriteMarkdown(text, opts = {}) {
 }
 
 // src/register.ts
+var MAX_MARKDOWN = 1e4;
+var MAX_PRESSABLE = 256;
+var CONTROL_RE2 = /[\u0000-\u001f\u007f]/;
 var cwdPromise;
 var hyperlinkPromise;
 function ensureHyperlink(api) {
@@ -652,6 +655,89 @@ function sessionCwd(api) {
   }
   return cwdPromise;
 }
+function fileUrlToPath2(href) {
+  try {
+    const url = new URL(href);
+    if (url.protocol !== "file:") return null;
+    let path = decodeURIComponent(url.pathname);
+    if (url.hostname) {
+      return `\\\\${url.hostname}${path.replace(/\//g, "\\")}`;
+    }
+    if (/^\/[A-Za-z]:\//.test(path)) {
+      return path.slice(1).replace(/\//g, "\\");
+    }
+    return path;
+  } catch {
+    return null;
+  }
+}
+async function detectPlatform(api) {
+  let os = "";
+  try {
+    os = await api.env.get("OS") || "";
+  } catch {
+  }
+  if (/^win/i.test(os)) return "win32";
+  if (/darwin|mac/i.test(os)) return "darwin";
+  const cwd = await sessionCwd(api);
+  if (cwd && (/^[A-Za-z]:[\\/]/.test(cwd) || cwd.startsWith("\\\\"))) return "win32";
+  if (cwd && cwd.startsWith("/Users/")) return "darwin";
+  return "linux";
+}
+async function log(api, text) {
+  try {
+    await api.ui.log(text);
+  } catch {
+  }
+}
+async function openLink(api, href) {
+  try {
+    if (!href || CONTROL_RE2.test(href)) {
+      await log(api, `cclink8: refused unsafe link: ${href}`);
+      return;
+    }
+    const parsed = new URL(href);
+    const protocol = parsed.protocol;
+    if (protocol !== "file:" && protocol !== "http:" && protocol !== "https:") {
+      await log(api, `cclink8: unsupported scheme: ${protocol}`);
+      return;
+    }
+    const platform = await detectPlatform(api);
+    let argv;
+    if (protocol === "file:") {
+      const path = fileUrlToPath2(href);
+      if (!path || CONTROL_RE2.test(path)) {
+        await log(api, `cclink8: invalid file link: ${href}`);
+        return;
+      }
+      argv = platform === "win32" ? ["explorer.exe", path] : platform === "darwin" ? ["open", path] : ["xdg-open", path];
+    } else {
+      argv = platform === "win32" ? ["rundll32.exe", "url.dll,FileProtocolHandler", parsed.href] : platform === "darwin" ? ["open", parsed.href] : ["xdg-open", parsed.href];
+    }
+    const result = await api.process.run(argv);
+    if (result.exitCode !== 0 && !(platform === "win32" && (argv[0] === "explorer.exe" || argv[0] === "rundll32.exe"))) {
+      await log(api, `cclink8: ${argv[0]} exited with ${result.exitCode}`);
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    await log(api, `cclink8: failed to open ${href}: ${message}`);
+  }
+}
+function buildMarkdown(api, event, text, targets) {
+  const links = targets.filter((target) => target.ok && (target.kind === "file-path" || target.kind === "file-url" || target.kind === "url")).map((target) => target.url);
+  if (links.length === 0 || links.length > MAX_PRESSABLE) return null;
+  const { Markdown } = api.ui.resolve(event);
+  const display = event.props.isFirstOfReply ? `\u25CF ${text}` : text;
+  if (display.length > MAX_MARKDOWN) return null;
+  return Markdown({
+    key: "cclink8-links",
+    text: display,
+    pressableLinks: links,
+    onLinkPress: (link) => {
+      void openLink(api, link.href);
+    }
+  });
+}
 function register(on) {
   on("session.start", async ($, e, next) => {
     try {
@@ -669,9 +755,23 @@ function register(on) {
       const original = e?.props?.text;
       if (typeof original !== "string" || original.length === 0) return next(e);
       const cwd = await sessionCwd($);
+      const checkExists = false;
+      const canPress = e.surface === "terminal";
+      if (canPress && original.length <= MAX_MARKDOWN) {
+        try {
+          const { spans } = parse(original, { cwd, checkExists });
+          const targets = spans.map((span) => resolve(span, cwd ?? "/", { checkExists }));
+          const text = rewrite(original, targets, "markdown");
+          if (text !== original && text.length <= MAX_MARKDOWN) {
+            const tree = buildMarkdown($, e, text, targets);
+            if (tree) return tree;
+          }
+        } catch {
+        }
+      }
       const rewritten = rewriteMarkdown(
         original,
-        cwd ? { cwd, checkExists: false } : { checkExists: false }
+        cwd ? { cwd, checkExists } : { checkExists }
       );
       if (typeof rewritten !== "string" || rewritten === original) return next(e);
       return next({ ...e, props: { ...e.props, text: rewritten } });

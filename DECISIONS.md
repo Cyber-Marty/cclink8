@@ -72,6 +72,7 @@
 | D005 | core 运行时拆分 | pure/node | **3/3 yes** | `@cclink8/core/pure` 零 `node:*`；Node 入口给 CLI；插件用 pure + 可选同步 exists | R1 | R2/R3 | 已批准 |
 | D006 | 插件存在性策略 | A/B | **2/3 A** | A：渲染不碰 fs；保守 grammar；CLI open 时校验 | R1/R2 | R3 | 已批准 |
 | D007 | 零配置 OSC 8 | 插件自设 env | **3/3 yes** | 仅未设置/空值时 `$.env.set('FORCE_HYPERLINK','1')`，不覆盖显式 0/false，失败不阻塞 | R2 | R1/R3 | 已批准 |
+| D008 | 点击由插件处理 | A/B | **3/3 yes** | CLI surface 用 `Markdown`+`onLinkPress` 打开 file/http(s)；非 CLI/超长/无 process.run 回退 A | R2 | R1/R3 | 已批准 |
 
 ## 第一轮裁决详情（2026-11-13）
 

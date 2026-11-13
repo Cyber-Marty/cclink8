@@ -95,6 +95,27 @@ describe("buildOpenCommand", () => {
     expect(command.file.length).toBeGreaterThan(0);
     expect(Array.isArray(command.args)).toBe(true);
   });
+
+  it("uses explorer.exe for every file format on Windows, with no extension filter", () => {
+    const names = [
+      "file.md", "file.txt", "file.csv", "file.json", "file.py",
+      "file.xlsx", "file.xls", "file.docx", "file.doc", "file.pptx", "file.ppt",
+      "file.pdf", "file.zip", "file.7z", "file.png", "file.jpg", "file.mp4", "file.bin",
+      "no-extension", "中文 文件.docx",
+    ];
+    for (const name of names) {
+      const target = classifyInput(`C:\\repo\\${name}`);
+      const command = buildOpenCommand(target, "win32");
+      expect(command.file).toBe("explorer.exe");
+      expect(command.args).toEqual([target.value]);
+    }
+  });
+
+  it("uses rundll32 for URLs on Windows", () => {
+    const command = buildOpenCommand(classifyInput("https://example.com/a"), "win32");
+    expect(command.file).toBe("rundll32.exe");
+    expect(command.args[1]).toBe("https://example.com/a");
+  });
 });
 
 describe("detectTerminal", () => {

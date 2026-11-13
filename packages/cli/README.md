@@ -10,7 +10,7 @@ cd cclink8
 npm install
 npm run build -w cclink8
 npm pack -w cclink8
-npm i -g ./cclink8-0.1.3.tgz
+npm i -g ./cclink8-0.1.4.tgz
 ```
 
 ```sh
@@ -23,7 +23,9 @@ cclink8 doctor
 ```
 
 - `print`/`open`/`copy` check local files; `print --text` links only existing paths. The plugin only guarantees syntax.
-- The plugin sets `FORCE_HYPERLINK=1` automatically; no manual env setup (explicit `0`/`false` is respected).
+- Any file format is opened through the OS default association; there is no extension filter (`.md`, `.txt`, `.xlsx`, `.docx`, `.pdf`, `.zip`, `.png`, extensionless, spaces/Chinese names, etc.).
+- In the Claude Code CLI surface, the plugin handles a **single click** via `Markdown` + `onLinkPress`, not terminal OSC 8. Ctrl/Cmd+Click is handled by the surface (Windows may only run `explorer /select`) and does not trigger `onLinkPress`. `.xlsx`/Excel is fixed in 0.1.4. Non-CLI/long-text falls back to OSC 8; `cclink8 open` remains the fallback.
+- The plugin sets `FORCE_HYPERLINK=1` automatically; no manual env setup (explicit `0`/`false` is respected for the OSC 8 fallback).
 - Only `file:`, `http:`, and `https:` are accepted.
 - No telemetry, no local server, no automatic opening.
 - `:42` stays in the label; v0.1 opens the file, jump-to-line is v0.2.

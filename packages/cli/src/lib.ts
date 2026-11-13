@@ -171,14 +171,17 @@ export function formatTarget(target: Target, format: Format): string {
   return `[${label}](${href})`;
 }
 
-export function buildOpenCommand(target: Target): { file: string; args: string[] } {
-  if (process.platform === "win32") {
+export function buildOpenCommand(
+  target: Target,
+  platform: NodeJS.Platform = process.platform,
+): { file: string; args: string[] } {
+  if (platform === "win32") {
     if (target.kind === "url") {
       return { file: "rundll32.exe", args: ["url.dll,FileProtocolHandler", target.value] };
     }
     return { file: "explorer.exe", args: [target.value] };
   }
-  if (process.platform === "darwin") {
+  if (platform === "darwin") {
     return { file: "open", args: [target.value] };
   }
   return { file: "xdg-open", args: [target.value] };
@@ -206,10 +209,10 @@ export function detectTerminal(env: NodeJS.ProcessEnv = process.env, platform = 
   const term = (env.TERM || "").toLowerCase();
 
   if (env.WT_SESSION) {
-    return { level: "A", name: "Windows Terminal", notes: ["OSC 8 supported; Ctrl+Click opens links."] };
+    return { level: "A", name: "Windows Terminal", notes: ["OSC 8 fallback supported; single-click plugin links in Claude Code."] };
   }
   if (termProgram === "vscode") {
-    return { level: "A", name: "VS Code terminal", notes: ["OSC 8 supported; Ctrl+Click opens links."] };
+    return { level: "A", name: "VS Code terminal", notes: ["OSC 8 fallback supported; single-click plugin links in Claude Code."] };
   }
   if (termProgram === "iterm.app") return { level: "A", name: "iTerm2", notes: ["OSC 8 supported."] };
   if (termProgram === "wezterm") return { level: "A", name: "WezTerm", notes: ["OSC 8 supported."] };

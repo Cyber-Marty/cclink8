@@ -1,6 +1,6 @@
 # Manual TUI acceptance (release gate)
 
-R3 requires one real Ctrl+Click in each of Windows Terminal and VS Code, plus a path with spaces/Chinese, and `/plugin` must show `cclink8` mod active.
+R3 requires one real **single-click** in each of Windows Terminal and VS Code, plus a path with spaces/Chinese, and `/plugin` must show `cclink8` mod active. Ctrl/Cmd+Click is handled by the surface and does not trigger the plugin's `onLinkPress` (Windows may only run `explorer /select`).
 
 ## Setup
 
@@ -20,7 +20,7 @@ C:\Users\SunnyCC\Projects\cclink8-acceptance\中文 空格目录\验收 文件.t
 C:\Users\SunnyCC\Projects\cclink8\README.md
 ```
 
-Ctrl+Click each path. Expected: the default app opens the file.
+Single-click each path. Expected: the default app opens the file. Do not use Ctrl+Click: it is handled by the terminal/IDE and may only select the file.
 
 Also ask for a fenced code block containing one of the paths. Expected: the path inside the code block is plain text, not a link.
 
@@ -31,9 +31,9 @@ Also ask for a fenced code block containing one of the paths. Expected: the path
 
 ## Failure handling
 
-1. Set `FORCE_HYPERLINK=1` and retry.
+1. Confirm `/plugin` shows `cclink8` 0.1.4+ and retry with a single click.
 2. If it still fails, run `cclink8 open "<path>"`; the CLI is the guaranteed fallback.
-3. Record terminal name, version, and result. If a terminal fails, report it; do not claim v0.1.1 final sign-off.
+3. Record terminal name, version, and result. If a terminal fails, report it; do not claim final sign-off.
 
 ## Result template
 
@@ -44,5 +44,5 @@ VS Code terminal: PASS / FAIL (version, notes)
 C:\Program Files\nodejs\node.exe: PASS / FAIL
 中文/空格路径: PASS / FAIL
 Code block unaffected: PASS / FAIL
-FORCE_HYPERLINK used: yes / no
+Single-click used: yes / no
 ```

@@ -13,7 +13,7 @@
 
 ## English
 
-`cclink8` is a Claude Code plugin (an official `ui.render` mod) plus a small CLI. It rewrites assistant markdown so paths like `C:\repo\file.py:42` and URLs become real OSC 8 links. When the terminal cannot render links, it says so and gives you `cclink8 open` instead of pretending.
+`cclink8` is a Claude Code plugin (an official `ui.render` mod) plus a small CLI. In the Claude Code CLI surface it renders assistant links as `Markdown` with an `onLinkPress` handler, so a click is handled by the plugin itself rather than the terminal's OSC 8 layer. Non-CLI surfaces and overly long messages fall back to OSC 8; `cclink8 open` remains the fallback.
 
 - No local HTTP server
 - No file tracking or previews
@@ -21,6 +21,8 @@
 - No automatic opening
 - No shell execution
 - Zero configuration: the plugin sets `FORCE_HYPERLINK=1` in-session unless you explicitly set it
+
+> **Clicking:** In Claude Code CLI / VS Code, **single-click** a cclink8 link. Ctrl/Cmd+Click is handled by the terminal/IDE surface; on Windows it may run `explorer /select` (locate only) and does not trigger the plugin's `onLinkPress`. If single-click fails, use `cclink8 open "<path>"`.
 
 Requires Claude Code **2.1.287+** for mods. The CLI requires Node **20+**.
 
@@ -33,7 +35,7 @@ claude plugin marketplace add Cyber-Marty/cclink8
 claude plugin install cclink8@cclink8
 ```
 
-Start a new session or run `/reload-plugins`. In a session, `/plugin` should show `cclink8` as active. No environment setup is required. If you explicitly set `FORCE_HYPERLINK=0`/`false`, cclink8 respects it and links may not be clickable.
+Start a new session or run `/reload-plugins`. In a session, `/plugin` should show `cclink8` as active. No environment setup is required. If you explicitly set `FORCE_HYPERLINK=0`/`false`, the OSC 8 fallback may not be clickable; CLI-surface clicks are still handled by the plugin.
 
 **CLI** — npm registry is **pending**. Install from the GitHub repo, a packed tarball, or source:
 
@@ -44,7 +46,7 @@ npm install
 npm run build -w cclink8
 
 npm pack -w cclink8
-npm i -g ./cclink8-0.1.3.tgz
+npm i -g ./cclink8-0.1.4.tgz
 cclink8 doctor
 ```
 
@@ -52,11 +54,13 @@ The CLI bundles `@cclink8/core` into `dist/index.js`; the tarball has no runtime
 
 ### Five MVP scenarios
 
-1. `C:\repo\file.py:42` → Ctrl+Click in Windows Terminal / VS Code.
+1. `C:\repo\file.py:42` → single-click in the Claude Code CLI / VS Code.
 2. `\\server\share\file` → open Explorer or the default app.
 3. `https://example.com/...` → open the browser.
 4. Paths with spaces, Chinese, brackets, `#`, `%` encode correctly.
-5. A terminal without OSC 8 → full path shown plus `cclink8 open <path>`.
+5. Non-CLI or long-text fallback: if OSC 8 is unavailable, show the full path plus `cclink8 open <path>`.
+
+**Any file format works.** cclink8 passes the path to the OS default association, with no extension filter. Tested matrix: `.md .txt .csv .json .py .xlsx .xls .docx .doc .pptx .ppt .pdf .zip .7z .png .jpg .mp4 .bin`, plus extensionless files and spaces/Chinese names. On the Claude Code CLI surface, v0.1.4 handles the click via the plugin, independent of OSC 8.
 
 ### CLI
 
@@ -83,20 +87,20 @@ cclink8 init                     # print plugin install instructions
 
 | Level | Terminal | Behavior |
 |---|---|---|
-| A | Windows Terminal, VS Code, iTerm2, WezTerm, Ghostty, kitty | OSC 8 link; Ctrl+Click |
+| A | Windows Terminal, VS Code, iTerm2, WezTerm, Ghostty, kitty | OSC 8 fallback; click gesture follows the terminal |
 | B | Markdown-capable TUI | `[label](url)` |
 | C | cmd/PowerShell, Apple Terminal | full path/URL + `cclink8 open` |
 | D | tmux 3.4+/SSH | `-T hyperlinks`; otherwise copy or CLI |
 
-`cclink8 doctor` prints the detected level and a concrete fix. If nothing renders, use the CLI; it is the guaranteed path.
+`cclink8 doctor` prints the detected level and a concrete fix. This matrix applies to the **OSC 8 fallback** (non-CLI surfaces or overly long messages). In the Claude Code CLI surface, clicks are handled by the plugin via `onLinkPress`, not by the terminal's OSC 8 layer.
 
 ### Troubleshooting
 
-**Ctrl+Click does nothing for a `.txt` or any file.** The plugin sets `FORCE_HYPERLINK=1` automatically in-session; no manual setup is needed. If you explicitly set `FORCE_HYPERLINK=0`/`false`, the plugin respects it and links may not be clickable — unset it or use `cclink8 open <path>`.
+**Single-click does nothing, or Ctrl+Click only selects the file.** In the Claude Code CLI / VS Code surface, v0.1.4 handles a **single click** via `onLinkPress`; Ctrl/Cmd+Click is handled by the surface and on Windows may run `explorer /select` (locate only), so it will not open the file. Confirm `/plugin` shows `cclink8` 0.1.4 or newer and use a single click. If that still fails, use `cclink8 open "<path>"`; non-CLI/long-text fallback may require OSC 8.
 
-**Use Windows Terminal or VS Code.** The VS Code terminal has a known file-link scheme issue (#78833); if links still do not open, use `cclink8 open <path>`.
+**Use Windows Terminal or VS Code.** The VS Code terminal has a known file-link scheme issue (#78833) for OSC 8 fallback; if links still do not open, use `cclink8 open <path>`.
 
-**If you see `path (file:///...)`**, the terminal is not enabling OSC 8. Click the URL text or use `cclink8 open <path>`.
+**If you see `path (file:///...)`**, the OSC 8 fallback is not clickable in this terminal. Click the URL text or use `cclink8 open <path>`.
 
 ### Why not the alternatives?
 
@@ -140,7 +144,7 @@ The plugin build bundles `@cclink8/core` into one self-contained hooks module; m
 
 ### Status
 
-- v0.1.3 (zero-config OSC 8, no manual environment setup)
+- v0.1.4 (plugin-handled clicks on the CLI surface; OSC 8 fallback)
 - 78 unit tests + 18 plugin tests
 - CI green on Windows / macOS / Ubuntu × Node 20/22
 - npm CLI registry publish pending
@@ -153,7 +157,7 @@ Apache-2.0. Contributions use DCO sign-off; see [CONTRIBUTING.md](CONTRIBUTING.m
 
 ## 中文
 
-`cclink8` 是一个 Claude Code 插件（官方 `ui.render` mod）加一个小型 CLI。它重写 assistant 的 Markdown，把 `C:\repo\file.py:42` 这类路径和网址变成真正的 OSC 8 链接。终端不支持链接时，它明确降级并给出 `cclink8 open`，而不是假装可点。
+`cclink8` 是一个 Claude Code 插件（官方 `ui.render` mod）加一个小型 CLI。在 Claude Code CLI surface，它用 `Markdown` + `onLinkPress` 由插件自己处理点击，不依赖终端 OSC 8；非 CLI surface 或超长文本回退到 OSC 8；`cclink8 open` 仍是兜底。
 
 - 不启动本地 HTTP 服务
 - 不跟踪文件、不做预览
@@ -161,6 +165,8 @@ Apache-2.0. Contributions use DCO sign-off; see [CONTRIBUTING.md](CONTRIBUTING.m
 - 不自动打开
 - 不执行 shell
 - 零配置：插件会在 session 内自动设置 `FORCE_HYPERLINK=1`（除非你显式设置）
+
+> **点击方式：** 在 Claude Code CLI / VS Code 中请**单击** cclink8 链接。Ctrl/Cmd+Click 由终端/IDE 原生处理；Windows 上可能只执行 `explorer /select`（定位不打开），不会触发插件的 `onLinkPress`。单击仍失败时用 `cclink8 open "<path>"`。
 
 需要 Claude Code **2.1.287+**（mods）；CLI 需要 Node **20+**。
 
@@ -173,7 +179,7 @@ claude plugin marketplace add Cyber-Marty/cclink8
 claude plugin install cclink8@cclink8
 ```
 
-启动新会话，或运行 `/reload-plugins`。在会话里运行 `/plugin`，应看到 `cclink8` 处于 active。不需要任何环境变量设置。如果你显式设置了 `FORCE_HYPERLINK=0`/`false`，插件会尊重它，此时链接可能不可点。
+启动新会话，或运行 `/reload-plugins`。在会话里运行 `/plugin`，应看到 `cclink8` 处于 active。不需要任何环境变量设置。如果你显式设置了 `FORCE_HYPERLINK=0`/`false`，只影响 OSC 8 fallback；CLI surface 点击仍由插件处理。
 
 **CLI** —— npm registry 仍 **pending**。可从 GitHub 仓库、打包的 tarball 或源码安装：
 
@@ -184,19 +190,27 @@ npm install
 npm run build -w cclink8
 
 npm pack -w cclink8
-npm i -g ./cclink8-0.1.3.tgz
+npm i -g ./cclink8-0.1.4.tgz
 cclink8 doctor
 ```
 
 CLI 会把 `@cclink8/core` 打包进 `dist/index.js`；tarball 不依赖未发布的 npm 包。
 
+### 点击行为
+
+- **Claude Code CLI surface**：插件用 `Markdown` + `onLinkPress` 处理**单击**，不依赖终端 OSC 8；Ctrl/Cmd+Click 由 surface 处理，Windows 可能只 `explorer /select`。`.xlsx`/Excel 在 v0.1.4 修复。
+- **非 CLI surface 或超长文本**：回退到 OSC 8；终端不支持时显示完整路径，`cclink8 open <path>` 仍可打开。
+- 只允许 `file:`/`http:`/`https:`；无 shell、不自动打开、无 telemetry。
+
 ### 五个 MVP 场景
 
-1. `C:\repo\file.py:42` → 在 Windows Terminal / VS Code 里 Ctrl+Click。
+1. `C:\repo\file.py:42` → 在 Claude Code CLI / VS Code 里单击。
 2. `\\server\share\file` → 打开资源管理器或默认应用。
 3. `https://example.com/...` → 打开浏览器。
 4. 含空格、中文、括号、`#`、`%` 的路径正确编码。
-5. 终端不支持 OSC 8 → 显示完整路径，并提示 `cclink8 open <path>`。
+5. 非 CLI 或超长文本 fallback：终端不支持 OSC 8 时显示完整路径，并提示 `cclink8 open <path>`。
+
+**任意文件格式均可。** cclink8 把路径交给系统默认关联打开，不做扩展名过滤。已测试矩阵：`.md .txt .csv .json .py .xlsx .xls .docx .doc .pptx .ppt .pdf .zip .7z .png .jpg .mp4 .bin`，以及无扩展名、含空格/中文的文件名。Claude Code CLI surface 上 v0.1.4 由插件处理点击，不依赖 OSC 8。
 
 ### CLI
 
@@ -223,20 +237,20 @@ cclink8 init                     # 打印插件安装说明
 
 | 级别 | 终端 | 行为 |
 |---|---|---|
-| A | Windows Terminal、VS Code、iTerm2、WezTerm、Ghostty、kitty | OSC 8 链接；Ctrl+Click |
+| A | Windows Terminal、VS Code、iTerm2、WezTerm、Ghostty、kitty | OSC 8 fallback；点击手势由终端决定 |
 | B | 支持 Markdown 的 TUI | `[label](url)` |
 | C | cmd/PowerShell、Apple Terminal | 完整路径/URL + `cclink8 open` |
 | D | tmux 3.4+/SSH | `-T hyperlinks`；否则复制或 CLI |
 
-`cclink8 doctor` 会打印检测到的级别和具体修复建议。如果什么都不显示，直接用 CLI，它是最可靠的兜底。
+`cclink8 doctor` 会打印检测到的级别和具体修复建议。该矩阵针对 **OSC 8 fallback**（非 CLI surface 或超长文本）；Claude Code CLI surface 的点击由插件 `onLinkPress` 处理。
 
 ### 排障
 
-**`.txt` 或任意文件 Ctrl+Click 没反应。** 插件会在 session 内自动设置 `FORCE_HYPERLINK=1`，无需手动配置。如果你显式设置了 `FORCE_HYPERLINK=0`/`false`，插件会尊重它，此时链接可能不可点——取消该设置，或用 `cclink8 open <path>`。
+**单击没反应，或 Ctrl+Click 只选中文件。** 在 Claude Code CLI / VS Code surface，v0.1.4 通过 `onLinkPress` 处理**单击**；Ctrl/Cmd+Click 由 surface 原生处理，Windows 上可能只执行 `explorer /select`（定位不打开），不会打开文件。确认 `/plugin` 显示 `cclink8` 0.1.4 或更高，并用单击。仍不行时用 `cclink8 open "<path>"`；非 CLI/超长文本 fallback 才依赖 OSC 8。
 
-**请使用 Windows Terminal 或 VS Code。** VS Code 终端有已知的 file-link scheme 问题（#78833）；如果仍打不开，用 `cclink8 open <path>`。
+**请使用 Windows Terminal 或 VS Code。** VS Code 终端有已知的 file-link scheme 问题（#78833），影响 OSC 8 fallback；如果仍打不开，用 `cclink8 open <path>`。
 
-**如果显示 `路径 (file:///...)`**，说明终端没有启用 OSC 8。点击括号里的 URL，或用 `cclink8 open <path>`。
+**如果显示 `路径 (file:///...)`**，说明 OSC 8 fallback 在当前终端不可点。点击括号里的 URL，或用 `cclink8 open <path>`。
 
 ### 为什么不用替代方案？
 
@@ -280,7 +294,7 @@ packages/claude-plugin   ui.render hooks module + manifest
 
 ### 状态
 
-- v0.1.3（零配置 OSC 8，无需手动设置环境变量）
+- v0.1.4（CLI surface 点击由插件处理，OSC 8 fallback）
 - 78 个单测 + 18 个 plugin 测试
 - CI 在 Windows / macOS / Ubuntu × Node 20/22 全绿
 - npm CLI registry 发布仍 pending

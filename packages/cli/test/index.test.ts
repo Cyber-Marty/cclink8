@@ -70,6 +70,8 @@ describe("runCli exit codes", () => {
       expect(await runCli(["doctor"])).toBe(0);
       expect(stdout).toContain("core: bundled");
       expect(stdout).toContain("plugin sets it automatically");
+      expect(stdout).toContain("CLI clicks are handled by the plugin");
+      expect(stdout).toContain("single-click plugin links");
       expect(stdout).not.toContain("PowerShell:");
       expect(stdout).not.toContain("cmd:");
     } finally {
@@ -84,6 +86,7 @@ describe("runCli exit codes", () => {
     try {
       expect(await runCli(["doctor"])).toBe(0);
       expect(stdout).toContain("explicitly disabled");
+      expect(stdout).toContain("OSC 8 fallback may not be clickable");
       expect(stdout).toContain("cclink8 open");
     } finally {
       if (previous === undefined) delete process.env.FORCE_HYPERLINK;
@@ -91,9 +94,9 @@ describe("runCli exit codes", () => {
     }
   });
 
-  it("init mentions the pending npm registry and auto FORCE_HYPERLINK", async () => {
+  it("init mentions the pending npm registry and single-click behavior", async () => {
     expect(await runCli(["init"])).toBe(0);
     expect(stdout).toContain("npm registry is pending");
-    expect(stdout).toContain("sets FORCE_HYPERLINK=1 automatically");
+    expect(stdout).toContain("handles a single click in the CLI");
   });
 });
