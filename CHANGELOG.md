@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2 — 2026-11-13
+
+- `cclink8 doctor` and `cclink8 init` now print the exact `FORCE_HYPERLINK=1` commands for PowerShell and cmd.
+- README troubleshooting: if Ctrl+Click does nothing, set `FORCE_HYPERLINK=1` before starting Claude Code; use Windows Terminal / VS Code; VS Code terminal has a known file-link scheme issue.
+- `init` derives the tarball name from the package version instead of hardcoding 0.1.0.
+
 ## 0.1.1 — 2026-11-13
 
 - Fix install documentation: npm registry is still pending; the CLI installs from a packed tarball or source.

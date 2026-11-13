@@ -63,13 +63,23 @@ describe("runCli exit codes", () => {
     expect(stdout).toContain("file://server/share/a%20b.txt");
   });
 
-  it("doctor reports the bundled core", async () => {
-    expect(await runCli(["doctor"])).toBe(0);
-    expect(stdout).toContain("core: bundled");
+  it("doctor reports the bundled core and FORCE_HYPERLINK commands when unset", async () => {
+    const previous = process.env.FORCE_HYPERLINK;
+    delete process.env.FORCE_HYPERLINK;
+    try {
+      expect(await runCli(["doctor"])).toBe(0);
+      expect(stdout).toContain("core: bundled");
+      expect(stdout).toContain("PowerShell: $env:FORCE_HYPERLINK=1");
+      expect(stdout).toContain("cmd:        set FORCE_HYPERLINK=1");
+    } finally {
+      if (previous === undefined) delete process.env.FORCE_HYPERLINK;
+      else process.env.FORCE_HYPERLINK = previous;
+    }
   });
 
-  it("init mentions the pending npm registry", async () => {
+  it("init mentions the pending npm registry and FORCE_HYPERLINK", async () => {
     expect(await runCli(["init"])).toBe(0);
     expect(stdout).toContain("npm registry is pending");
+    expect(stdout).toContain("FORCE_HYPERLINK=1");
   });
 });

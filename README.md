@@ -23,7 +23,7 @@ claude plugin install cclink8@cclink8
 
 In a session, run `/plugin` and look for `cclink8`; after installing, start a new session or `/reload-plugins`.
 
-**CLI** — npm registry is **pending** (not published yet). Install from the GitHub repo, a packed tarball, or source:
+**CLI** 鈥?npm registry is **pending** (not published yet). Install from the GitHub repo, a packed tarball, or source:
 
 ```sh
 git clone https://github.com/Cyber-Marty/cclink8.git
@@ -33,7 +33,7 @@ npm run build -w cclink8
 
 # then either link the workspace or install the packed tarball
 npm pack -w cclink8
-npm i -g ./cclink8-0.1.0.tgz
+npm i -g ./cclink8-0.1.2.tgz
 cclink8 doctor
 ```
 
@@ -41,11 +41,11 @@ The CLI bundles `@cclink8/core` into `dist/index.js`; the tarball has no runtime
 
 ## Five MVP scenarios
 
-1. `C:\repo\file.py:42` → Ctrl+Click in Windows Terminal / VS Code.
-2. `\\server\share\file` → open Explorer or the default app.
-3. `https://example.com/...` → open the browser.
+1. `C:\repo\file.py:42` 鈫?Ctrl+Click in Windows Terminal / VS Code.
+2. `\\server\share\file` 鈫?open Explorer or the default app.
+3. `https://example.com/...` 鈫?open the browser.
 4. Paths with spaces, Chinese, brackets, `#`, `%` encode correctly.
-5. A terminal without OSC 8 → full path shown plus `cclink8 open <path>`.
+5. A terminal without OSC 8 鈫?full path shown plus `cclink8 open <path>`.
 
 ## CLI
 
@@ -79,6 +79,24 @@ Windows files/directories use `explorer.exe`; URLs use `rundll32.exe url.dll,Fil
 | D | tmux 3.4+/SSH | `-T hyperlinks`; otherwise copy or CLI |
 
 `cclink8 doctor` prints the detected level and a concrete fix. If nothing renders, use the CLI; it is the guaranteed path.
+
+## Troubleshooting
+
+**Ctrl+Click does nothing for a `.txt` or any file.** Set `FORCE_HYPERLINK=1` **before** starting Claude Code, then restart the terminal and Claude Code:
+
+```powershell
+# PowerShell
+$env:FORCE_HYPERLINK=1
+```
+
+```bat
+REM cmd.exe
+set FORCE_HYPERLINK=1
+```
+
+**Use Windows Terminal or VS Code.** The VS Code terminal has a known file-link scheme issue (#78833); if links still do not open, use `cclink8 open <path>`.
+
+**If you see `path (file:///...)`**, the terminal is not enabling OSC 8. Click the URL text or set `FORCE_HYPERLINK=1`; `cclink8 open <path>` always works as a fallback.
 
 ## Why not the alternatives?
 
@@ -123,3 +141,4 @@ The plugin build bundles `@cclink8/core` into one self-contained hooks module; m
 ## License
 
 Apache-2.0. Contributions use DCO sign-off; see [CONTRIBUTING.md](CONTRIBUTING.md). Governance is in [GOVERNANCE.md](GOVERNANCE.md).
+

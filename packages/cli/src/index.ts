@@ -133,11 +133,19 @@ async function printTarget(raw: string | undefined, text: string | undefined, fo
 async function printDoctor(): Promise<void> {
   const profile = detectTerminal();
   const version = getVersion();
+  const force = process.env.FORCE_HYPERLINK;
+  const forceEnabled = Boolean(force && !["0", "false", "no", "off"].includes(force.toLowerCase()));
   process.stdout.write(`cclink8 ${version}\n`);
   process.stdout.write(`node ${process.version} (${process.platform}/${process.arch})\n`);
   process.stdout.write(`terminal: ${profile.name} (level ${profile.level})\n`);
   for (const note of profile.notes) process.stdout.write(`  - ${note}\n`);
-  process.stdout.write(`FORCE_HYPERLINK=${process.env.FORCE_HYPERLINK || "(unset)"}\n`);
+  process.stdout.write(`FORCE_HYPERLINK=${force || "(unset)"}\n`);
+  if (!forceEnabled) {
+    process.stdout.write("FORCE_HYPERLINK is not set. Set it BEFORE starting Claude Code:\n");
+    process.stdout.write("  PowerShell: $env:FORCE_HYPERLINK=1\n");
+    process.stdout.write("  cmd:        set FORCE_HYPERLINK=1\n");
+    process.stdout.write("Restart the terminal/Claude Code after setting it.\n");
+  }
   process.stdout.write("core: bundled (print/open/copy available)\n");
 }
 
@@ -173,8 +181,9 @@ function printInit(): void {
     "  cclink8 doctor",
     "",
     "The plugin is self-contained; no npm install is required for the plugin.",
+    "If Ctrl+Click does nothing: set FORCE_HYPERLINK=1 before starting claude (cclink8 doctor shows commands).",
     "npm registry is pending. Install the CLI from a GitHub tarball or from source:",
-    "  npm pack -w cclink8 && npm i -g ./cclink8-0.1.0.tgz",
+    `  npm pack -w cclink8 && npm i -g ./cclink8-${getVersion()}.tgz`,
   ].join("\n") + "\n");
 }
 

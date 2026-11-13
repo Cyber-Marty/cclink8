@@ -10,7 +10,7 @@ cd cclink8
 npm install
 npm run build -w cclink8
 npm pack -w cclink8
-npm i -g ./cclink8-0.1.0.tgz
+npm i -g ./cclink8-0.1.2.tgz
 ```
 
 ```sh
@@ -28,3 +28,4 @@ cclink8 doctor
 - `:42` stays in the label; v0.1 opens the file, jump-to-line is v0.2.
 
 See the [main README](https://github.com/Cyber-Marty/cclink8#readme) for the plugin, terminal matrix, and security model.
+
