@@ -21,7 +21,7 @@ claude plugin marketplace add Cyber-Marty/cclink8
 claude plugin install cclink8@cclink8
 ```
 
-In a session, run `/plugin` and look for `cclink8`; after installing, start a new session or `/reload-plugins`.
+In a session, run `/plugin` and look for `cclink8`; after installing, start a new session or `/reload-plugins`. No environment setup is required: the plugin sets `FORCE_HYPERLINK=1` automatically (it does not override your explicit `0`/`false`).
 
 **CLI** 鈥?npm registry is **pending** (not published yet). Install from the GitHub repo, a packed tarball, or source:
 
@@ -33,7 +33,7 @@ npm run build -w cclink8
 
 # then either link the workspace or install the packed tarball
 npm pack -w cclink8
-npm i -g ./cclink8-0.1.2.tgz
+npm i -g ./cclink8-0.1.3.tgz
 cclink8 doctor
 ```
 
@@ -82,21 +82,11 @@ Windows files/directories use `explorer.exe`; URLs use `rundll32.exe url.dll,Fil
 
 ## Troubleshooting
 
-**Ctrl+Click does nothing for a `.txt` or any file.** Set `FORCE_HYPERLINK=1` **before** starting Claude Code, then restart the terminal and Claude Code:
-
-```powershell
-# PowerShell
-$env:FORCE_HYPERLINK=1
-```
-
-```bat
-REM cmd.exe
-set FORCE_HYPERLINK=1
-```
+**Ctrl+Click does nothing for a `.txt` or any file.** The plugin sets `FORCE_HYPERLINK=1` automatically in-session; no manual setup is needed. If you explicitly set `FORCE_HYPERLINK=0`/`false`, the plugin respects it and links may not be clickable—unset it or use `cclink8 open <path>`.
 
 **Use Windows Terminal or VS Code.** The VS Code terminal has a known file-link scheme issue (#78833); if links still do not open, use `cclink8 open <path>`.
 
-**If you see `path (file:///...)`**, the terminal is not enabling OSC 8. Click the URL text or set `FORCE_HYPERLINK=1`; `cclink8 open <path>` always works as a fallback.
+**If you see `path (file:///...)`**, the terminal is not enabling OSC 8. Click the URL text or use `cclink8 open <path>`; if you explicitly set `FORCE_HYPERLINK=0/false`, unset it.
 
 ## Why not the alternatives?
 

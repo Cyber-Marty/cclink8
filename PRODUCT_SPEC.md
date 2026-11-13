@@ -211,7 +211,7 @@ cclink8/
 
 ## 8. 分发与安装
 
-- npm registry：v0.1 **pending**，不发布 npm；CLI 从 GitHub tarball/source 安装：`npm pack -w cclink8 && npm i -g ./cclink8-0.1.2.tgz`。
+- npm registry：v0.1 **pending**，不发布 npm；CLI 从 GitHub tarball/source 安装：`npm pack -w cclink8 && npm i -g ./cclink8-0.1.3.tgz`。
 - Claude Code marketplace：插件一键安装。
 - GitHub Releases：独立 CLI tarball（Node 单文件，无 runtime 依赖）。
 - Homebrew/PyPI：有明确需求再做，MVP 不铺。

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.3 — 2026-11-13
+
+- Zero-config Ctrl+Click: the plugin sets `FORCE_HYPERLINK=1` inside the session when the user has not set it explicitly.
+- Explicit `FORCE_HYPERLINK=0/false/no/off` is never overridden.
+- No manual environment setup; `doctor`/`init` updated; `cclink8 open` remains the fallback.
+
 ## 0.1.2 — 2026-11-13
 
 - `cclink8 doctor` and `cclink8 init` now print the exact `FORCE_HYPERLINK=1` commands for PowerShell and cmd.

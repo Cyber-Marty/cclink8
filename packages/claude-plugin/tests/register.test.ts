@@ -11,8 +11,19 @@ const SITE = {
   surface: "terminal",
 } as const;
 
+function stubEnv(on: any, value: string | undefined = "1") {
+  on("env.get", () => ({ value }));
+  on("env.set", () => ({ value: undefined }));
+}
+
+function stubEnvCwdAndRender(on: any) {
+  on("session.cwd", () => ({ value: "C:/work" }));
+  on("ui.render", () => ({ type: "Text", props: {}, children: ["drawn by Claude Code"] }));
+}
+
 async function render($: any, on: any, text: string): Promise<string> {
   let captured = text;
+  stubEnv(on);
   on("session.cwd", () => ({ value: "C:/work" }));
   on("ui.render", ($: any, e: any) => {
     captured = String(e.props.text ?? "");
@@ -70,6 +81,7 @@ test("does not rewrite inside an existing markdown link", async ($, on) => {
 
 test("is idempotent", async ($, on) => {
   const captured: string[] = [];
+  stubEnv(on);
   on("session.cwd", () => ({ value: "C:/work" }));
   on("ui.render", ($: any, e: any) => {
     captured.push(String(e.props.text ?? ""));
@@ -86,6 +98,7 @@ test("is idempotent", async ($, on) => {
 
 test("caches session.cwd across assistant blocks", async ($, on) => {
   let calls = 0;
+  stubEnv(on);
   on("session.cwd", () => {
     calls += 1;
     return { value: "C:/work" };
@@ -108,6 +121,7 @@ test("leaves text without paths unchanged", async ($, on) => {
 
 test("does not break when session.cwd() throws", async ($, on) => {
   let captured = "";
+  stubEnv(on);
   on("session.cwd", () => {
     throw new Error("no cwd");
   });
@@ -127,6 +141,7 @@ test("does not break when session.cwd() throws", async ($, on) => {
 
 test("preserves other AssistantMessage props", async ($, on) => {
   let capturedProps: any;
+  stubEnv(on);
   on("session.cwd", () => ({ value: "C:/work" }));
   on("ui.render", ($: any, e: any) => {
     capturedProps = e.props;
@@ -142,8 +157,81 @@ test("preserves other AssistantMessage props", async ($, on) => {
   expect(capturedProps.isFirstOfReply).toBe(true);
 });
 
+test("sets FORCE_HYPERLINK when unset", async ($, on) => {
+  let getCalls = 0;
+  let setValue: string | undefined;
+  on("env.get", () => {
+    getCalls += 1;
+    return { value: undefined };
+  });
+  on("env.set", ($: any, e: any) => {
+    setValue = e.value;
+    return { value: undefined };
+  });
+  on("session.start", () => ({ cwd: "/work" }));
+
+  await $.session.start({ surface: "terminal", isInteractive: true, cwd: "/work" });
+
+  expect(getCalls).toBe(1);
+  expect(setValue).toBe("1");
+});
+
+test("sets once and falls back to the first ui.render when session.start did not run", async ($, on) => {
+  let getCalls = 0;
+  let setCalls = 0;
+  on("env.get", () => {
+    getCalls += 1;
+    return { value: undefined };
+  });
+  on("env.set", () => {
+    setCalls += 1;
+    return { value: undefined };
+  });
+  stubEnvCwdAndRender(on);
+
+  const first = await $.ui.mount({ ...SITE, props: { ...SITE.props, text: "C:\\work\\a.py" } });
+  await first.unmount();
+  const second = await $.ui.mount({ ...SITE, props: { ...SITE.props, text: "C:\\work\\b.py" } });
+  await second.unmount();
+
+  expect(getCalls).toBe(1);
+  expect(setCalls).toBe(1);
+});
+
+test("does not override an explicit FORCE_HYPERLINK value", async ($, on) => {
+  let setCalled = false;
+  on("env.get", () => ({ value: "0" }));
+  on("env.set", () => {
+    setCalled = true;
+    return { value: undefined };
+  });
+  on("session.start", () => ({ cwd: "/work" }));
+
+  await $.session.start({ surface: "terminal", isInteractive: true, cwd: "/work" });
+
+  expect(setCalled).toBe(false);
+});
+
+test("env failure does not block rendering", async ($, on) => {
+  let captured = "";
+  on("env.get", () => {
+    throw new Error("env unavailable");
+  });
+  on("session.cwd", () => ({ value: "C:/work" }));
+  on("ui.render", ($: any, e: any) => {
+    captured = String(e.props.text ?? "");
+    return { type: "Text", props: {}, children: ["drawn by Claude Code"] };
+  });
+
+  const ui = await $.ui.mount({ ...SITE, props: { ...SITE.props, text: "C:\\work\\file.py" } });
+  await ui.unmount();
+
+  expect(captured).toContain("(file:///C:/work/file.py)");
+});
+
 test("does not break drawing when the text is not a string", async ($, on) => {
   let captured: unknown = "unset";
+  stubEnv(on);
   on("ui.render", ($: any, e: any) => {
     captured = e.props.text;
     return { type: "Text", props: {}, children: ["drawn by Claude Code"] };

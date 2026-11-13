@@ -10,7 +10,7 @@ cd cclink8
 npm install
 npm run build -w cclink8
 npm pack -w cclink8
-npm i -g ./cclink8-0.1.2.tgz
+npm i -g ./cclink8-0.1.3.tgz
 ```
 
 ```sh
@@ -23,6 +23,7 @@ cclink8 doctor
 ```
 
 - `print`/`open`/`copy` check local files; `print --text` links only existing paths. The plugin only guarantees syntax.
+- The plugin sets `FORCE_HYPERLINK=1` automatically; no manual env setup (explicit `0`/`false` is respected).
 - Only `file:`, `http:`, and `https:` are accepted.
 - No telemetry, no local server, no automatic opening.
 - `:42` stays in the label; v0.1 opens the file, jump-to-line is v0.2.

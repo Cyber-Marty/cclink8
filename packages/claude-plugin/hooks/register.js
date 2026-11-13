@@ -628,6 +628,21 @@ function rewriteMarkdown(text, opts = {}) {
 
 // src/register.ts
 var cwdPromise;
+var hyperlinkPromise;
+function ensureHyperlink(api) {
+  if (!hyperlinkPromise) {
+    hyperlinkPromise = (async () => {
+      try {
+        const current = await api.env.get("FORCE_HYPERLINK");
+        if (current === void 0 || current === "") {
+          await api.env.set("FORCE_HYPERLINK", "1");
+        }
+      } catch {
+      }
+    })();
+  }
+  return hyperlinkPromise;
+}
 function sessionCwd(api) {
   if (!cwdPromise) {
     cwdPromise = api.session.cwd().then(
@@ -638,7 +653,18 @@ function sessionCwd(api) {
   return cwdPromise;
 }
 function register(on) {
+  on("session.start", async ($, e, next) => {
+    try {
+      await ensureHyperlink($);
+    } catch {
+    }
+    return next(e);
+  });
   on("ui.render", { component: "AssistantMessage" }, async ($, e, next) => {
+    try {
+      await ensureHyperlink($);
+    } catch {
+    }
     try {
       const original = e?.props?.text;
       if (typeof original !== "string" || original.length === 0) return next(e);

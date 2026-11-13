@@ -63,23 +63,37 @@ describe("runCli exit codes", () => {
     expect(stdout).toContain("file://server/share/a%20b.txt");
   });
 
-  it("doctor reports the bundled core and FORCE_HYPERLINK commands when unset", async () => {
+  it("doctor explains that the plugin sets FORCE_HYPERLINK automatically", async () => {
     const previous = process.env.FORCE_HYPERLINK;
     delete process.env.FORCE_HYPERLINK;
     try {
       expect(await runCli(["doctor"])).toBe(0);
       expect(stdout).toContain("core: bundled");
-      expect(stdout).toContain("PowerShell: $env:FORCE_HYPERLINK=1");
-      expect(stdout).toContain("cmd:        set FORCE_HYPERLINK=1");
+      expect(stdout).toContain("plugin sets it automatically");
+      expect(stdout).not.toContain("PowerShell:");
+      expect(stdout).not.toContain("cmd:");
     } finally {
       if (previous === undefined) delete process.env.FORCE_HYPERLINK;
       else process.env.FORCE_HYPERLINK = previous;
     }
   });
 
-  it("init mentions the pending npm registry and FORCE_HYPERLINK", async () => {
+  it("doctor warns when FORCE_HYPERLINK is explicitly disabled", async () => {
+    const previous = process.env.FORCE_HYPERLINK;
+    process.env.FORCE_HYPERLINK = "0";
+    try {
+      expect(await runCli(["doctor"])).toBe(0);
+      expect(stdout).toContain("explicitly disabled");
+      expect(stdout).toContain("cclink8 open");
+    } finally {
+      if (previous === undefined) delete process.env.FORCE_HYPERLINK;
+      else process.env.FORCE_HYPERLINK = previous;
+    }
+  });
+
+  it("init mentions the pending npm registry and auto FORCE_HYPERLINK", async () => {
     expect(await runCli(["init"])).toBe(0);
     expect(stdout).toContain("npm registry is pending");
-    expect(stdout).toContain("FORCE_HYPERLINK=1");
+    expect(stdout).toContain("sets FORCE_HYPERLINK=1 automatically");
   });
 });
