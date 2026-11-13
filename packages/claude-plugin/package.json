@@ -1,6 +1,6 @@
 {
   "name": "@cclink8/claude-plugin",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,6 +9,6 @@
     "test": "claude plugin test ."
   },
   "dependencies": {
-    "@cclink8/core": "0.1.0"
+    "@cclink8/core": "0.1.1"
   }
 }

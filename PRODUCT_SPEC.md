@@ -211,12 +211,12 @@ cclink8/
 
 ## 8. 分发与安装
 
-- npm：`npm i -g cclink8` 或 `npx cclink8 init`。
+- npm registry：v0.1 **pending**，不发布 npm；CLI 从 GitHub tarball/source 安装：`npm pack -w cclink8 && npm i -g ./cclink8-0.1.0.tgz`。
 - Claude Code marketplace：插件一键安装。
-- GitHub Releases：独立 CLI 包（Node 单文件/npx 兜底）。
+- GitHub Releases：独立 CLI tarball（Node 单文件，无 runtime 依赖）。
 - Homebrew/PyPI：有明确需求再做，MVP 不铺。
 - 安装后 `cclink8 doctor` + `cclink8 demo`，2 分钟内完成第一次点击。
-- 版本兼容：plugin manifest 固定 API 版本；semver；release-please + Changesets；npm provenance/Sigstore。
+- 版本兼容：plugin manifest 固定 API 版本；semver；release-please + Changesets；未来 npm publish 时启用 provenance/Sigstore。
 
 ---
 

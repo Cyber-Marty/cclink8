@@ -93,8 +93,9 @@ Windows files/directories use `explorer.exe`; URLs use `rundll32.exe url.dll,Fil
 ## Security
 
 - Only `file:`, `http:`, and `https:` are accepted by the CLI; `javascript:`, `data:`, `vbscript:`, `smb:` are rejected.
-- Paths are canonicalized; files must exist before `open`/`copy`.
-- No control characters or ANSI/OSC injection.
+- The plugin only guarantees **syntax**; it does not verify that a file exists.
+- `cclink8 open`/`copy` verify local files before opening/copying; `print`/`print --text` also only link existing local paths.
+- Paths are canonicalized; controlled characters and ANSI/OSC injection are rejected.
 - The plugin only changes what is drawn; it never opens a file or URL by itself.
 - No telemetry. `doctor` is local-only; sharing its output is opt-in.
 

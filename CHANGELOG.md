@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1 — 2026-11-13
+
+- Fix install documentation: npm registry is still pending; the CLI installs from a packed tarball or source.
+- `cclink8 init` no longer suggests an unpublished `npm i -g cclink8`.
+- Clarify that the plugin guarantees syntactic links only; `cclink8 open`/`copy` validate file existence.
+
 ## 0.1.0-rc.1 — 2026-11-13
 
 First release candidate.

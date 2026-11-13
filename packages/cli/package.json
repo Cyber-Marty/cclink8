@@ -1,6 +1,6 @@
 {
   "name": "cclink8",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Clickable file paths and URLs for Claude Code, with safe terminal fallback.",
   "type": "module",
   "bin": {
@@ -24,6 +24,6 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "@cclink8/core": "0.1.0"
+    "@cclink8/core": "0.1.1"
   }
 }
