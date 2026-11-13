@@ -2,6 +2,7 @@ import { existsSync, readFileSync, statSync } from 'node:fs';
 import { resolve as resolvePath } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import * as pure from './pure.js';
+import { fileUrlForPath } from './pure.js';
 import type {
   LineInfo,
   ParseResult,
@@ -28,8 +29,11 @@ function nodeLineFits(filePath: string, line?: number, column?: number): LineInf
 }
 
 function nodeFileUrl(filePath: string): string {
+  // pathToFileURL on macOS/Linux treats a Windows drive or UNC string as a
+  // relative POSIX path. Detect Windows shapes independently of the host and
+  // use the pure encoder, which always yields file:///C:/... or file://server/...
   if (/^[A-Za-z]:[\\/]/.test(filePath) || filePath.startsWith('\\\\')) {
-    return pathToFileURL(filePath).href;
+    return fileUrlForPath(filePath);
   }
   if (filePath.startsWith('/')) return new URL(`file://${encodeURI(filePath)}`).href;
   return pathToFileURL(filePath).href;

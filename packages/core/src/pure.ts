@@ -354,6 +354,11 @@ function pathToUrl(value: string, opts?: ResolveOptions): string {
   return `file:///${encodeFileUrlPath(normalized.replace(/\\/g, '/'))}`;
 }
 
+/** Platform-independent file URL encoder for a filesystem path. */
+export function fileUrlForPath(value: string): string {
+  return pathToUrl(value);
+}
+
 function fileUrlToPath(raw: string): string | null {
   let parsed: URL;
   try {

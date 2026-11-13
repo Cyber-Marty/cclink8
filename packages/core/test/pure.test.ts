@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  fileUrlForPath,
   parse,
   resolve,
   rewrite,
@@ -26,6 +27,12 @@ function options(extra: ResolveOptions = {}): ResolveOptions {
 }
 
 describe('pure: no-node path handling', () => {
+  it('encodes Windows drive and UNC paths platform-independently', () => {
+    expect(fileUrlForPath('C:\\repo\\file.py')).toBe('file:///C:/repo/file.py');
+    expect(fileUrlForPath('\\\\server\\share\\file.txt')).toBe('file://server/share/file.txt');
+    expect(fileUrlForPath('/home/user/file.py')).toBe('file:///home/user/file.py');
+  });
+
   it('links a Windows path and manually encodes the file URL', () => {
     const out = rewriteMarkdown('see C:\\repo\\中文 文件.py:2', options());
     expect(out).toContain('中文 文件.py:2');
