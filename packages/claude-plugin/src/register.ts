@@ -46,7 +46,6 @@ type On = {
 };
 
 const MAX_MARKDOWN = 10_000;
-const MAX_PRESSABLE = 256;
 const CONTROL_RE = /[\u0000-\u001f\u007f]/;
 
 let cwdPromise: Promise<string | undefined> | undefined;
@@ -174,10 +173,10 @@ function buildMarkdown(
   text: string,
   targets: ResolvedTarget[],
 ): unknown | null {
-  const links = targets
-    .filter((target) => target.ok && (target.kind === "file-path" || target.kind === "file-url" || target.kind === "url"))
-    .map((target) => target.url);
-  if (links.length === 0 || links.length > MAX_PRESSABLE) return null;
+  const hasLink = targets.some(
+    (target) => target.ok && (target.kind === "file-path" || target.kind === "file-url" || target.kind === "url"),
+  );
+  if (!hasLink) return null;
 
   const { Markdown } = api.ui.resolve(event);
   // The engine does not reliably keep the opening bullet when a mod replaces
@@ -185,10 +184,12 @@ function buildMarkdown(
   const display = event.props.isFirstOfReply ? `● ${text}` : text;
   if (display.length > MAX_MARKDOWN) return null;
 
+  // No pressableLinks: d.ts says every link drawn is pressable when absent.
+  // The href the engine passes may be escaped (%28/%20), so matching
+  // `target.url` exactly is unreliable. openLink validates the scheme.
   return Markdown({
     key: "cclink8-links",
     text: display,
-    pressableLinks: links,
     onLinkPress: (link: { href: string }) => {
       void openLink(api, link.href);
     },

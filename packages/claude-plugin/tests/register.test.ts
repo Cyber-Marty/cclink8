@@ -11,6 +11,11 @@ const SITE = {
   surface: "terminal",
 } as const;
 
+function firstMarkdownHref(text: string): string | undefined {
+  const match = /\]\(([^)]+)\)/.exec(text);
+  return match?.[1];
+}
+
 function stubEnv(on: any, value: string | undefined = "1") {
   on("env.get", ($: any, e: any) => ({
     value: e.name === "OS" ? "Windows_NT" : value,
@@ -285,8 +290,42 @@ test("press works for every file extension matrix", async ($, on) => {
       ...SITE,
       props: { ...SITE.props, text: item.text, isFirstOfReply: false },
     });
-    expect(await ui.find({ type: "Markdown" })).toBeDefined();
+    const md = await ui.find({ type: "Markdown" });
+    expect(md).toBeDefined();
+    expect((md?.props as any)?.pressableLinks).toBeUndefined();
     await ui.press({ key: "cclink8-links", link: { href: item.href } });
+    await new Promise((resolve) => setTimeout(resolve, 5));
+    await ui.unmount();
+    expect(captured.calls.at(-1)).toEqual(["explorer.exe", item.path]);
+  }
+});
+
+test("press works with escaped hrefs for brackets, spaces and Chinese", async ($, on) => {
+  stubEnv(on);
+  on("session.cwd", () => ({ value: "C:/work" }));
+  const captured = stubProcess(on);
+  on("ui.render", () => ({ type: "Text", props: {}, children: ["drawn by Claude Code"] }));
+
+  const cases = [
+    { text: "C:\\报告(1).xlsx", path: "C:\\报告(1).xlsx" },
+    { text: "C:\\中文 目录\\文件.docx", path: "C:\\中文 目录\\文件.docx" },
+    { text: "C:\\docs\\manual(1).pdf", path: "C:\\docs\\manual(1).pdf" },
+  ];
+
+  for (const item of cases) {
+    const ui = await $.ui.mount({
+      ...SITE,
+      props: { ...SITE.props, text: item.text, isFirstOfReply: false },
+    });
+    const md = await ui.find({ type: "Markdown" });
+    expect((md?.props as any)?.pressableLinks).toBeUndefined();
+    const href = firstMarkdownHref(String((md?.props as any)?.text ?? ""));
+    expect(href).toBeTruthy();
+    expect(href).toMatch(/^file:\/\//);
+    if (item.text.includes("(")) expect(href).toContain("%28");
+    if (item.text.includes(" ")) expect(href).toContain("%20");
+
+    await ui.press({ key: "cclink8-links", link: { href: href! } });
     await new Promise((resolve) => setTimeout(resolve, 5));
     await ui.unmount();
     expect(captured.calls.at(-1)).toEqual(["explorer.exe", item.path]);

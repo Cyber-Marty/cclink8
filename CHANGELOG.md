@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.5 — 2026-11-16
+
+- Fix file-link presses not firing: `pressableLinks` used `target.url`, but the Markdown href is escaped (`(`→`%28`, space→`%20`), so exact matching failed. Omitting `pressableLinks` lets every drawn link reach `onLinkPress`.
+- `onLinkPress` still allows only `file:`/`http:`/`https:`; A fallback retained; user-facing behavior remains single-click.
+
 ## 0.1.4 — 2026-11-13
 
 - Fix `.xlsx`/Excel link opening on the Claude Code CLI surface: use a **single click**. The plugin uses `Markdown` + `onLinkPress` and handles `file:`/`http(s):` presses itself, independent of terminal OSC 8.

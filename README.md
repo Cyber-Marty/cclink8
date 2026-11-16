@@ -46,7 +46,7 @@ npm install
 npm run build -w cclink8
 
 npm pack -w cclink8
-npm i -g ./cclink8-0.1.4.tgz
+npm i -g ./cclink8-0.1.5.tgz
 cclink8 doctor
 ```
 
@@ -60,7 +60,7 @@ The CLI bundles `@cclink8/core` into `dist/index.js`; the tarball has no runtime
 4. Paths with spaces, Chinese, brackets, `#`, `%` encode correctly.
 5. Non-CLI or long-text fallback: if OSC 8 is unavailable, show the full path plus `cclink8 open <path>`.
 
-**Any file format works.** cclink8 passes the path to the OS default association, with no extension filter. Tested matrix: `.md .txt .csv .json .py .xlsx .xls .docx .doc .pptx .ppt .pdf .zip .7z .png .jpg .mp4 .bin`, plus extensionless files and spaces/Chinese names. On the Claude Code CLI surface, v0.1.4 handles the click via the plugin, independent of OSC 8.
+**Any file format works.** cclink8 passes the path to the OS default association, with no extension filter. Tested matrix: `.md .txt .csv .json .py .xlsx .xls .docx .doc .pptx .ppt .pdf .zip .7z .png .jpg .mp4 .bin`, plus extensionless files and spaces/Chinese names. On the Claude Code CLI surface, v0.1.5 handles the click via the plugin, independent of OSC 8.
 
 ### CLI
 
@@ -96,7 +96,9 @@ cclink8 init                     # print plugin install instructions
 
 ### Troubleshooting
 
-**Single-click does nothing, or Ctrl+Click only selects the file.** In the Claude Code CLI / VS Code surface, v0.1.4 handles a **single click** via `onLinkPress`; Ctrl/Cmd+Click is handled by the surface and on Windows may run `explorer /select` (locate only), so it will not open the file. Confirm `/plugin` shows `cclink8` 0.1.4 or newer and use a single click. If that still fails, use `cclink8 open "<path>"`; non-CLI/long-text fallback may require OSC 8.
+**Single-click does nothing, or Ctrl+Click only selects the file.** In the Claude Code CLI / VS Code surface, v0.1.5 handles a **single click** via `onLinkPress`; Ctrl/Cmd+Click is handled by the surface and on Windows may run `explorer /select` (locate only), so it will not open the file. Confirm `/plugin` shows `cclink8` 0.1.5 or newer and use a single click. If that still fails, use `cclink8 open "<path>"`; non-CLI/long-text fallback may require OSC 8.
+
+Since v0.1.5, file links no longer rely on `pressableLinks` exact href matching; a single click reaches `onLinkPress` even when the Markdown href is percent-escaped.
 
 **Use Windows Terminal or VS Code.** The VS Code terminal has a known file-link scheme issue (#78833) for OSC 8 fallback; if links still do not open, use `cclink8 open <path>`.
 
@@ -144,7 +146,7 @@ The plugin build bundles `@cclink8/core` into one self-contained hooks module; m
 
 ### Status
 
-- v0.1.4 (plugin-handled clicks on the CLI surface; OSC 8 fallback)
+- v0.1.5 (plugin-handled clicks on the CLI surface; OSC 8 fallback)
 - 78 unit tests + 18 plugin tests
 - CI green on Windows / macOS / Ubuntu × Node 20/22
 - npm CLI registry publish pending
@@ -190,7 +192,7 @@ npm install
 npm run build -w cclink8
 
 npm pack -w cclink8
-npm i -g ./cclink8-0.1.4.tgz
+npm i -g ./cclink8-0.1.5.tgz
 cclink8 doctor
 ```
 
@@ -210,7 +212,7 @@ CLI 会把 `@cclink8/core` 打包进 `dist/index.js`；tarball 不依赖未发�
 4. 含空格、中文、括号、`#`、`%` 的路径正确编码。
 5. 非 CLI 或超长文本 fallback：终端不支持 OSC 8 时显示完整路径，并提示 `cclink8 open <path>`。
 
-**任意文件格式均可。** cclink8 把路径交给系统默认关联打开，不做扩展名过滤。已测试矩阵：`.md .txt .csv .json .py .xlsx .xls .docx .doc .pptx .ppt .pdf .zip .7z .png .jpg .mp4 .bin`，以及无扩展名、含空格/中文的文件名。Claude Code CLI surface 上 v0.1.4 由插件处理点击，不依赖 OSC 8。
+**任意文件格式均可。** cclink8 把路径交给系统默认关联打开，不做扩展名过滤。已测试矩阵：`.md .txt .csv .json .py .xlsx .xls .docx .doc .pptx .ppt .pdf .zip .7z .png .jpg .mp4 .bin`，以及无扩展名、含空格/中文的文件名。Claude Code CLI surface 上 v0.1.5 由插件处理点击，不依赖 OSC 8。
 
 ### CLI
 
@@ -246,7 +248,9 @@ cclink8 init                     # 打印插件安装说明
 
 ### 排障
 
-**单击没反应，或 Ctrl+Click 只选中文件。** 在 Claude Code CLI / VS Code surface，v0.1.4 通过 `onLinkPress` 处理**单击**；Ctrl/Cmd+Click 由 surface 原生处理，Windows 上可能只执行 `explorer /select`（定位不打开），不会打开文件。确认 `/plugin` 显示 `cclink8` 0.1.4 或更高，并用单击。仍不行时用 `cclink8 open "<path>"`；非 CLI/超长文本 fallback 才依赖 OSC 8。
+**单击没反应，或 Ctrl+Click 只选中文件。** 在 Claude Code CLI / VS Code surface，v0.1.5 通过 `onLinkPress` 处理**单击**；Ctrl/Cmd+Click 由 surface 原生处理，Windows 上可能只执行 `explorer /select`（定位不打开），不会打开文件。确认 `/plugin` 显示 `cclink8` 0.1.5 或更高，并用单击。仍不行时用 `cclink8 open "<path>"`；非 CLI/超长文本 fallback 才依赖 OSC 8。
+
+v0.1.5 起文件链接不再依赖 `pressableLinks` 的精确 href 匹配；即使 Markdown href 被 percent-escape，单击也会进入 `onLinkPress`。
 
 **请使用 Windows Terminal 或 VS Code。** VS Code 终端有已知的 file-link scheme 问题（#78833），影响 OSC 8 fallback；如果仍打不开，用 `cclink8 open <path>`。
 
@@ -294,7 +298,7 @@ packages/claude-plugin   ui.render hooks module + manifest
 
 ### 状态
 
-- v0.1.4（CLI surface 点击由插件处理，OSC 8 fallback）
+- v0.1.5（CLI surface 点击由插件处理，OSC 8 fallback）
 - 78 个单测 + 18 个 plugin 测试
 - CI 在 Windows / macOS / Ubuntu × Node 20/22 全绿
 - npm CLI registry 发布仍 pending

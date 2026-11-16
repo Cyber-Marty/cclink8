@@ -628,7 +628,6 @@ function rewriteMarkdown(text, opts = {}) {
 
 // src/register.ts
 var MAX_MARKDOWN = 1e4;
-var MAX_PRESSABLE = 256;
 var CONTROL_RE2 = /[\u0000-\u001f\u007f]/;
 var cwdPromise;
 var hyperlinkPromise;
@@ -724,15 +723,16 @@ async function openLink(api, href) {
   }
 }
 function buildMarkdown(api, event, text, targets) {
-  const links = targets.filter((target) => target.ok && (target.kind === "file-path" || target.kind === "file-url" || target.kind === "url")).map((target) => target.url);
-  if (links.length === 0 || links.length > MAX_PRESSABLE) return null;
+  const hasLink = targets.some(
+    (target) => target.ok && (target.kind === "file-path" || target.kind === "file-url" || target.kind === "url")
+  );
+  if (!hasLink) return null;
   const { Markdown } = api.ui.resolve(event);
   const display = event.props.isFirstOfReply ? `\u25CF ${text}` : text;
   if (display.length > MAX_MARKDOWN) return null;
   return Markdown({
     key: "cclink8-links",
     text: display,
-    pressableLinks: links,
     onLinkPress: (link) => {
       void openLink(api, link.href);
     }
