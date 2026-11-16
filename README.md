@@ -60,7 +60,7 @@ The CLI bundles `@cclink8/core` into `dist/index.js`; the tarball has no runtime
 4. Paths with spaces, Chinese, brackets, `#`, `%` encode correctly.
 5. Non-CLI or long-text fallback: if OSC 8 is unavailable, show the full path plus `cclink8 open <path>`.
 
-**Any file format works.** cclink8 passes the path to the OS default association, with no extension filter. Tested matrix: `.md .txt .csv .json .py .xlsx .xls .docx .doc .pptx .ppt .pdf .zip .7z .png .jpg .mp4 .bin`, plus extensionless files and spaces/Chinese names. On the Claude Code CLI surface, v0.1.5 handles the click via the plugin, independent of OSC 8.
+**Any file format works.** cclink8 passes the path to the OS default association, with no extension filter. Tested matrix: `.md .txt .csv .json .py .xlsx .xls .docx .doc .pptx .ppt .pdf .zip .7z .png .jpg .mp4 .bin`, plus extensionless files and spaces/Chinese names. On the Claude Code CLI surface, v0.1.5 handles the click via the plugin, independent of OSC 8. Full taxonomy and test scope: [FORMAT_MATRIX.md](FORMAT_MATRIX.md).
 
 ### CLI
 
@@ -212,7 +212,7 @@ CLI 会把 `@cclink8/core` 打包进 `dist/index.js`；tarball 不依赖未发�
 4. 含空格、中文、括号、`#`、`%` 的路径正确编码。
 5. 非 CLI 或超长文本 fallback：终端不支持 OSC 8 时显示完整路径，并提示 `cclink8 open <path>`。
 
-**任意文件格式均可。** cclink8 把路径交给系统默认关联打开，不做扩展名过滤。已测试矩阵：`.md .txt .csv .json .py .xlsx .xls .docx .doc .pptx .ppt .pdf .zip .7z .png .jpg .mp4 .bin`，以及无扩展名、含空格/中文的文件名。Claude Code CLI surface 上 v0.1.5 由插件处理点击，不依赖 OSC 8。
+**任意文件格式均可。** cclink8 把路径交给系统默认关联打开，不做扩展名过滤。已测试矩阵：`.md .txt .csv .json .py .xlsx .xls .docx .doc .pptx .ppt .pdf .zip .7z .png .jpg .mp4 .bin`，以及无扩展名、含空格/中文的文件名。Claude Code CLI surface 上 v0.1.5 由插件处理点击，不依赖 OSC 8。完整分类与测试边界见 [FORMAT_MATRIX.md](FORMAT_MATRIX.md)。
 
 ### CLI
 
