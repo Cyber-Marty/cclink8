@@ -4,10 +4,26 @@
 [![Release](https://img.shields.io/github/v/release/Cyber-Marty/cclink8)](https://github.com/Cyber-Marty/cclink8/releases/latest)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 
+> [!WARNING]
+> **Deprecated / 已弃用（2026-11-17）** — Claude Code's built-in OSC 8 links now cover this project's main use cases, and the plugin has no measurable adoption. It is no longer recommended for new installs and receives no further updates. See [Deprecation / 弃用说明](#deprecation--弃用说明).
+
 **Clickable file paths and URLs in Claude Code, with a safe terminal fallback.**  
 **让 Claude Code 里的文件路径和网址可点击跳转，终端不支持时安全降级。**
 
 [English](#english) | [中文](#中文)
+
+---
+
+## Deprecation / 弃用说明
+
+**As of 2026-11-17, cclink8 is deprecated and unmaintained. / 自 2026-11-17 起，cclink8 已弃用且不再维护。**
+
+- **Native support caught up / 原生功能已覆盖**: Claude Code renders OSC 8 links and opens file paths natively. Since v2.1.2, file paths in tool output are clickable; v2.1.274 fixed `file://` links in VS Code; v2.1.296 fixed Windows full paths and `file:///C:/...` in VS Code chat; v2.1.302 made backticked URLs fully clickable; v2.1.326 fixed wrapped URLs in unrecognized terminals. The canonical request [#13008](https://github.com/anthropics/claude-code/issues/13008) was closed as completed on 2026-08-17.
+- **No measurable adoption / 没有可测量的采用**: 0 stars, 0 forks, 0 watchers, 0 issues, 0 PRs, 0 release-asset downloads, no npm publication, and no external mentions. The repo was never distributed through npm or listed in a public marketplace.
+- **The remaining niche is unreliable / 剩余场景不可靠**: Plugin-handled single-click only works where the surface reports presses (the fullscreen terminal). The VS Code panel has upstream bugs ([#107335](https://github.com/anthropics/claude-code/issues/107335), [#110299](https://github.com/anthropics/claude-code/issues/110299)), so cross-surface single-click was never guaranteed.
+- **What is left is narrow / 剩下的空间很窄**: `path:line:col` exact jumps and a few fallbacks remain, but native support plus other tools cover enough that maintaining a separate plugin is not justified.
+
+Use Claude Code's built-in links. For `path:line` navigation, follow the upstream issues rather than installing this plugin. The CLI (`cclink8 open`) still works as a manual fallback, but it receives no further updates. / 请直接使用 Claude Code 原生链接；需要 `path:line` 跳转时请跟进上游 issue。CLI（`cclink8 open`）仍可作为手动兜底，但不再更新。
 
 ---
 
@@ -146,10 +162,11 @@ The plugin build bundles `@cclink8/core` into one self-contained hooks module; m
 
 ### Status
 
+- **Deprecated as of 2026-11-17; no further updates.** Last release: v0.1.5.
 - v0.1.5 (plugin-handled clicks on the CLI surface; OSC 8 fallback)
 - 78 unit tests + 18 plugin tests
 - CI green on Windows / macOS / Ubuntu × Node 20/22
-- npm CLI registry publish pending
+- npm CLI registry publish was never completed (deprecated before publication)
 
 ### License
 
@@ -298,10 +315,11 @@ packages/claude-plugin   ui.render hooks module + manifest
 
 ### 状态
 
+- **自 2026-11-17 起弃用，不再更新。** 最后版本：v0.1.5。
 - v0.1.5（CLI surface 点击由插件处理，OSC 8 fallback）
 - 78 个单测 + 18 个 plugin 测试
 - CI 在 Windows / macOS / Ubuntu × Node 20/22 全绿
-- npm CLI registry 发布仍 pending
+- npm CLI registry 发布未完成（发布前已弃用）
 
 ### 许可证
 
